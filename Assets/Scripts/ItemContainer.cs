@@ -8,6 +8,25 @@ public class ItemSlot
 {
     public Item item;
     public int count;
+
+    public void copy(ItemSlot slot)
+    {
+        item = slot.item;
+        count = slot.count;
+    }
+
+    public void set(Item itemFromParameter, int countFromParameter)
+    {
+        item = itemFromParameter;
+        count = countFromParameter;
+    }
+
+    public void clear()
+    {
+        item = null;
+        count = 0;
+    }
+
 }
 [CreateAssetMenu (menuName = "Data/Item Container")]
 public class ItemContainer : ScriptableObject

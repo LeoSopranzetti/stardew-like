@@ -7,7 +7,10 @@ public class TreeCuttable : ToolHit
 
     [SerializeField] GameObject pickUpDrop;
     [SerializeField] int dropCount = 5;
+    [SerializeField] int itemCountInOneDrop = 1;
     [SerializeField] float spread = 0.7f;
+    [SerializeField] Item item;
+
 
 
     public override void Hit()
@@ -19,8 +22,7 @@ public class TreeCuttable : ToolHit
             Vector3 position = transform.position;
             position.x += spread * UnityEngine.Random.value - spread / 2;
             position.y += spread * UnityEngine.Random.value - spread / 2;
-            GameObject gameObject = Instantiate(pickUpDrop);
-            gameObject.transform.position = position;
+            ItemSpawnManager.instance.spawnItem(position, item, itemCountInOneDrop);
 
         }
 

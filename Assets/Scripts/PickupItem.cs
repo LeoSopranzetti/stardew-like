@@ -47,4 +47,14 @@ public class PickupItem : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    public void set(Item item, int count)
+    {
+        this.item = item;
+        this.count = count;
+
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
+        transform.localScale = new Vector3(1,1,1);
+        renderer.sprite = item.icon;
+    }
 }
