@@ -8,6 +8,8 @@ public class ToolsCharacterController : MonoBehaviour
     Rigidbody2D rigidbody2d;
     [SerializeField] float offsetDistance = 1f;
     [SerializeField] float sizeOfInteractableArea = 1.2f;
+    [SerializeField] MarkerManager markerManager;
+    [SerializeField] TileMapReadController tileMapReadController;
 
     private void Awake()
     {
@@ -17,10 +19,17 @@ public class ToolsCharacterController : MonoBehaviour
 
     private void Update()
     {
+        Marker();
         if (Input.GetMouseButtonDown(0))
         {
             UseTool();
         }
+    }
+
+    public void Marker()
+    {
+        Vector3Int gridPosition = tileMapReadController.getGridPositions(Input.mousePosition, true);
+        markerManager.markedCell = gridPosition;
     }
 
     private void UseTool()
