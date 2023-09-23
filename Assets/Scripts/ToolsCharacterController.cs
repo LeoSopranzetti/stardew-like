@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
 public class ToolsCharacterController : MonoBehaviour
 {
@@ -10,6 +12,11 @@ public class ToolsCharacterController : MonoBehaviour
     [SerializeField] float sizeOfInteractableArea = 1.2f;
     [SerializeField] MarkerManager markerManager;
     [SerializeField] TileMapReadController tileMapReadController;
+    Vector3Int selectedTile;
+    bool selectable;
+    [SerializeField] float maxDistance = 1.5f;
+    [SerializeField] CropsManager cropsManager;
+    [SerializeField] TileData plowableTiles;
 
     private void Awake()
     {
@@ -19,20 +26,39 @@ public class ToolsCharacterController : MonoBehaviour
 
     private void Update()
     {
+        selectTile();
+        canSelecCheck();
         Marker();
         if (Input.GetMouseButtonDown(0))
         {
-            UseTool();
+            if (UseToolWorld() == true)
+            {
+                return;
+            }
+            useToolGrid();
         }
+    }
+
+    private void selectTile()
+    {
+        selectedTile = tileMapReadController.getGridPositions(Input.mousePosition, true);
+    }
+
+    private void canSelecCheck()
+    {
+        Vector2 characterPosition = transform.position;
+        Vector2 cameraPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        selectable = Vector2.Distance(characterPosition, cameraPosition) < maxDistance;
+        markerManager.show(selectable);
+
     }
 
     public void Marker()
     {
-        Vector3Int gridPosition = tileMapReadController.getGridPositions(Input.mousePosition, true);
-        markerManager.markedCell = gridPosition;
+        markerManager.markedCell = selectedTile;
     }
 
-    private void UseTool()
+    private bool UseToolWorld()
     {
         Vector2 position = rigidbody2d.position + character.lastMotionVector * offsetDistance;
 
@@ -44,8 +70,30 @@ public class ToolsCharacterController : MonoBehaviour
             if(hit != null)
             {
                 hit.Hit();
-                break;
+                return true; ;
             }
+        }
+        return false;
+    }
+
+    private void useToolGrid()
+    {
+
+        if(selectable == true)
+        {
+            TileBase tileBase = tileMapReadController.getTileBase(selectedTile);
+            TileData tileData = tileMapReadController.getTileData(tileBase);
+
+            if (tileData != plowableTiles){return;}
+
+            if (cropsManager.check(selectedTile))
+            {
+                cropsManager.seed(selectedTile);
+            } else
+            {
+                cropsManager.plow(selectedTile);
+            }
+
         }
     }
 }
